@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MotionTale Pro — motion control from a photo + reference clip</title>
+  <meta name="description" content="Upload a photo + a reference video. MotionTale Pro transfers motion in minutes." />
+  <meta name="theme-color" content="#07070A" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MotionTale Pro" />
+  <meta property="og:description" content="Motion control: photo + reference clip → animated result." />
+
+  <style>
+    :root{
+      --bg:#07070A;
+      --card: rgba(255,255,255,.05);
+      --stroke: rgba(255,255,255,.10);
+      --muted: rgba(255,255,255,.70);
+      --text: rgba(255,255,255,.92);
+      --hot: #e8ff3d;
+      --hot2:#a1ff00;
+      --danger:#ff4d6d;
+      --shadow: 0 30px 120px rgba(0,0,0,.55);
+      --radius: 22px;
+      --max: 1120px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Noto Sans";
+      background: var(--bg);
+      color: var(--text);
+    }
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:-1;
+      background:
+        radial-gradient(900px 520px at 18% 0%, rgba(232,255,61,.14), transparent 62%),
+        radial-gradient(820px 540px at 82% 6%, rgba(161,255,0,.10), transparent 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(255,255,255,.07), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%),
+        var(--bg);
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:var(--max); margin:0 auto; padding: 18px 18px 90px;}
+
+    header{
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+      background: rgba(7,7,10,.55);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      z-index: 10;
+    }
+    .top{
+      max-width:var(--max);
+      margin:0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:850; letter-spacing:.02em}
+    .logo{width:26px;height:26px;border-radius:10px;background: linear-gradient(135deg, var(--hot), var(--hot2)); box-shadow: 0 0 30px rgba(232,255,61,.22)}
+    nav{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      font-weight:650;
+      font-size: 14px;
+    }
+    .pill.muted{opacity:.75}
+    .avatar{
+      width:26px;height:26px;border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+      display:none;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 750;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08)}
+    .btn.primary{background: linear-gradient(135deg, rgba(232,255,61,.98), rgba(161,255,0,.88)); color:#0a0a0b; border-color: rgba(0,0,0,.25)}
+    .btn.primary:hover{background: linear-gradient(135deg, rgba(232,255,61,1), rgba(161,255,0,1))}
+    .btn.ghost{background: transparent}
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
+
+    .grid{display:grid; gap:18px}
+    .hero{
+      padding-top: 18px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 22px;
+      align-items:stretch;
+    }
+    @media (max-width: 920px){ .hero{grid-template-columns:1fr; } }
+
+    .card{
+      background: var(--card);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .pad{padding: 22px}
+    h1{margin:0 0 10px; font-size: 44px; letter-spacing:-.02em; line-height:1.05}
+    @media (max-width: 520px){ h1{font-size: 36px;} }
+    p{margin:0; color: var(--muted); line-height:1.55}
+    .sub{margin-top:12px; font-size: 16px}
+    .kpis{display:flex; flex-wrap:wrap; gap:10px; margin-top: 18px}
+    .kpi{padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.04); font-weight:700; font-size: 13px; opacity:.9}
+
+    .previewWrap{position:relative; min-height: 320px;}
+    .preview{
+      aspect-ratio: 16/9;
+      width:100%;
+      border-radius: calc(var(--radius) - 8px);
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(1200px 320px at 20% 0%, rgba(232,255,61,.10), transparent 60%),
+        radial-gradient(900px 420px at 90% 10%, rgba(161,255,0,.09), transparent 58%),
+        rgba(0,0,0,.2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .preview video{width:100%; height:100%; object-fit:cover; display:block}
+    .previewOverlay{position:absolute; inset: 18px; pointer-events:none; display:flex; flex-direction:column; justify-content:space-between}
+    .tag{display:inline-flex; padding:7px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.25); width:fit-content; font-weight:750; font-size: 13px}
+
+    section{margin-top: 22px}
+    h2{margin:0 0 10px; font-size: 22px; letter-spacing:-.01em}
+    .cols{display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px}
+    @media (max-width: 920px){ .cols{grid-template-columns:1fr} }
+    .mini{padding: 16px; border-radius: 18px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.04)}
+    .mini b{display:block; margin-bottom: 6px}
+
+    .uploader{display:grid; gap: 12px}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 12px}
+    @media (max-width: 720px){ .row{grid-template-columns:1fr} }
+    .field{padding: 14px; border-radius: 18px; border:1px dashed rgba(255,255,255,.14); background: rgba(255,255,255,.03)}
+    .field label{display:block; font-weight:750; margin-bottom: 6px}
+    .field small{display:block; color: var(--muted); margin-top: 6px}
+    input[type="file"]{width:100%}
+
+    .fine{font-size: 12px; color: rgba(255,255,255,.62); line-height:1.5}
+    .status{margin-top: 10px; min-height: 18px; font-weight:650}
+    .status.ok{color: rgba(232,255,61,.95)}
+    .status.bad{color: rgba(255,77,109,.95)}
+
+    footer{margin-top: 46px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.08); color: rgba(255,255,255,.65)}
+    .footRow{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  </style>
+
+  <!-- Supabase (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header>
+    <div class="top">
+      <div class="brand"><span class="logo" aria-hidden="true"></span> MotionTale <span style="opacity:.8">Pro</span></div>
+      <nav>
+        <a class="pill muted" href="#how">How it works</a>
+        <a class="pill muted" href="#upload">Upload</a>
+        <a class="pill muted" href="#refs">References</a>
+        <div class="pill" id="authPill">
+          <span class="avatar" id="avatar"><img alt="" id="avatarImg" /></span>
+          <span id="authLabel">Not signed in</span>
+        </div>
+        <button class="btn primary" id="loginBtn" type="button">Login to generate</button>
+        <button class="btn ghost" id="logoutBtn" type="button" style="display:none">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="card pad">
+        <h1>Motion control for creators.</h1>
+        <p class="sub">Upload a <b>photo</b> + a <b>reference clip</b>. MotionTale Pro transfers the motion and outputs a ready-to-post video.</p>
+        <div class="kpis">
+          <div class="kpi">Minutes, not hours</div>
+          <div class="kpi">No editing skills</div>
+          <div class="kpi">Before → After friendly</div>
+          <div class="kpi">MVP: waitlist only</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px">
+          <a class="btn primary" href="#upload">Create my video</a>
+          <a class="btn" href="#refs">See references</a>
+        </div>
+        <div class="status" id="topStatus"></div>
+        <div class="fine" style="margin-top:10px">Note: this page does not upload to a backend yet. We use login to add you to the waitlist.</div>
+      </div>
+
+      <div class="card pad previewWrap">
+        <div class="preview" id="heroPreview">
+          <!-- Optional: drop in a hero mp4 later -->
+          <div style="text-align:center; padding: 22px">
+            <div style="font-weight:850; font-size:18px">Hero preview</div>
+            <div class="fine" style="margin-top:8px">Replace with a 6–10s loop: <b>Original → Result</b> in first 2 seconds.</div>
+          </div>
+        </div>
+        <div class="previewOverlay">
+          <div class="tag">Photo + Reference → Motion</div>
+          <div class="tag" style="align-self:flex-end">9:16 recommended for ads</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="grid" style="margin-top: 24px">
+      <h2>How it works</h2>
+      <div class="cols">
+        <div class="mini"><b>1) Upload</b><span class="fine">Choose your photo and a reference video (dance / walk / gesture).</span></div>
+        <div class="mini"><b>2) Generate</b><span class="fine">We transfer motion while keeping your face and style stable.</span></div>
+        <div class="mini"><b>3) Download</b><span class="fine">Get an MP4 that’s ready to post and test.</span></div>
+      </div>
+    </section>
+
+    <section id="upload" class="card pad" style="margin-top: 18px">
+      <h2>Upload</h2>
+      <p>Pick inputs. To actually generate, you’ll need to log in (waitlist for now).</p>
+      <div class="uploader" style="margin-top: 14px">
+        <div class="row">
+          <div class="field">
+            <label for="photo">Photo</label>
+            <input id="photo" type="file" accept="image/*" />
+            <small>Best: sharp face, front-ish angle, good lighting.</small>
+          </div>
+          <div class="field">
+            <label for="ref">Reference video</label>
+            <input id="ref" type="file" accept="video/*" />
+            <small>Best: clear full body, simple background, 3–8 seconds.</small>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+          <button class="btn primary" id="generateBtn" type="button">Generate (login required)</button>
+          <div class="fine">No generation happens here yet — it’s a waitlist flow.</div>
+        </div>
+
+        <div class="status" id="uploadStatus"></div>
+      </div>
+    </section>
+
+    <section id="waitlist" class="card pad" style="margin-top: 18px; display:none">
+      <h2>You’re on the waitlist</h2>
+      <p>We added you to the waitlist. We’ll email you when generation is enabled.</p>
+      <div class="fine" id="waitlistEmail" style="margin-top:10px"></div>
+    </section>
+
+    <section id="refs" class="grid" style="margin-top: 26px">
+      <h2>References (for positioning + preview ideas)</h2>
+      <p class="fine">These are product references Boss shared. We can pull preview clips from them (or replace with our own before/after).</p>
+      <div class="cols">
+        <a class="mini" href="https://monet.vision/motion-transfer" target="_blank" rel="noreferrer"><b>Monet — Motion Transfer</b><span class="fine">Positioning + layout reference.</span></a>
+        <a class="mini" href="https://aiconsistentcharacter.com/motion-control" target="_blank" rel="noreferrer"><b>AI Consistent Character — Motion Control</b><span class="fine">Examples + feature framing.</span></a>
+        <a class="mini" href="https://akool.com/apps/character/edit" target="_blank" rel="noreferrer"><b>Akool — Character Edit</b><span class="fine">UI patterns for upload + outputs.</span></a>
+        <a class="mini" href="https://openart.ai/video/action-sync-video" target="_blank" rel="noreferrer"><b>OpenArt — Action Sync</b><span class="fine">Preview video ideas.</span></a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footRow">
+        <div>© <span id="y"></span> MotionTale Pro</div>
+        <div class="fine">MVP landing for hypothesis testing. No generation on this page yet.</div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // ---- CONFIG: set your Supabase project keys here ----
+    // For GitHub Pages, these are public. Use RLS + limit auth providers in Supabase.
+    const SUPABASE_URL = window.__SUPABASE_URL__ || '';
+    const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY__ || '';
+
+    const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
+      ? window.supabase?.createClient?.(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    const authLabel = document.getElementById('authLabel');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const avatar = document.getElementById('avatar');
+    const avatarImg = document.getElementById('avatarImg');
+
+    const topStatus = document.getElementById('topStatus');
+    const uploadStatus = document.getElementById('uploadStatus');
+
+    const waitlist = document.getElementById('waitlist');
+    const waitlistEmail = document.getElementById('waitlistEmail');
+
+    function setStatus(el, text, kind){
+      el.textContent = text || '';
+      el.classList.remove('ok','bad');
+      if(kind) el.classList.add(kind);
+    }
+
+    function setSignedOutUI(){
+      authLabel.textContent = 'Not signed in';
+      loginBtn.style.display = '';
+      logoutBtn.style.display = 'none';
+      avatar.style.display = 'none';
+      waitlist.style.display = 'none';
+      waitlistEmail.textContent = '';
+    }
+
+    function setSignedInUI(session){
+      const email = session?.user?.email || 'signed in';
+      authLabel.textContent = email;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = '';
+
+      // Avatar: Supabase user metadata may include avatar_url for Google
+      const url = session?.user?.user_metadata?.avatar_url || session?.user?.user_metadata?.picture;
+      if(url){
+        avatarImg.src = url;
+        avatar.style.display = 'inline-flex';
+      } else {
+        avatar.style.display = 'none';
+      }
+
+      // Waitlist screen
+      waitlist.style.display = '';
+      waitlistEmail.textContent = 'We will notify: ' + email;
+
+      // Scroll gently to waitlist so it’s obvious
+      try{ waitlist.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
+    }
+
+    async function initAuth(){
+      if(!sb){
+        setStatus(topStatus, 'Auth is not configured yet (missing Supabase URL/anon key). You can still use the landing + uploads UI.', 'bad');
+        setSignedOutUI();
+        return;
+      }
+
+      // GitHub Pages origin example: https://<user>.github.io
+      // IMPORTANT: Supabase Redirect URLs must include this exact value.
+      const redirectTo = window.location.origin + window.location.pathname;
+
+      loginBtn.addEventListener('click', async ()=>{
+        setStatus(topStatus, 'Opening Google sign-in…');
+        const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+        if(error) setStatus(topStatus, error.message, 'bad');
+      });
+
+      logoutBtn.addEventListener('click', async ()=>{
+        await sb.auth.signOut();
+        setSignedOutUI();
+        setStatus(topStatus, 'Signed out.', 'ok');
+      });
+
+      const { data: { session } } = await sb.auth.getSession();
+      if(session) setSignedInUI(session);
+      else setSignedOutUI();
+
+      sb.auth.onAuthStateChange((_event, session)=>{
+        if(session){
+          setSignedInUI(session);
+          setStatus(topStatus, 'Signed in — added to waitlist.', 'ok');
+        } else {
+          setSignedOutUI();
+        }
+      });
+
+      // Upload section CTA
+      document.getElementById('generateBtn').addEventListener('click', async ()=>{
+        const { data: { session } } = await sb.auth.getSession();
+        if(!session){
+          setStatus(uploadStatus, 'Please login first to generate (waitlist flow).', 'bad');
+          loginBtn.click();
+          return;
+        }
+        setStatus(uploadStatus, 'You’re logged in. We added you to the waitlist — generation will unlock soon.', 'ok');
+        waitlist.style.display = '';
+        waitlistEmail.textContent = 'We will notify: ' + (session.user.email || '');
+      });
+    }
+
+    initAuth();
+  </script>
+</body>
+</html>
