@@ -189,10 +189,10 @@
         <a class="pill muted" href="#refs">References</a>
         <div class="pill" id="authPill">
           <span class="avatar" id="avatar"><img alt="" id="avatarImg" /></span>
-          <span id="authLabel">Not signed in</span>
+          <span id="authLabel">Не залогинены</span>
         </div>
-        <button class="btn primary" id="loginBtn" type="button">Login to generate</button>
-        <button class="btn ghost" id="logoutBtn" type="button" style="display:none">Logout</button>
+        <button class="btn primary" id="loginBtn" type="button">Логин, чтобы сгенерить</button>
+        <button class="btn ghost" id="logoutBtn" type="button" style="display:none">Выйти</button>
       </nav>
     </div>
   </header>
@@ -200,8 +200,8 @@
   <main class="container">
     <section class="hero">
       <div class="card pad">
-        <h1>Motion control for creators.</h1>
-        <p class="sub">Upload a <b>photo</b> + a <b>reference clip</b>. MotionTale Pro transfers the motion and outputs a ready-to-post video.</p>
+        <h1>Моушен-контрол для креаторов.</h1>
+        <p class="sub">Загрузи <b>фото</b> + <b>референс-видео</b>. MotionTale Pro перенесёт движение и выдаст готовый ролик.</p>
         <div class="kpis">
           <div class="kpi">Minutes, not hours</div>
           <div class="kpi">No editing skills</div>
@@ -209,8 +209,8 @@
           <div class="kpi">MVP: waitlist only</div>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px">
-          <a class="btn primary" href="#upload">Create my video</a>
-          <a class="btn" href="#refs">See references</a>
+          <a class="btn primary" href="#upload">Сделать моё видео</a>
+          <a class="btn" href="#refs">Примеры</a>
         </div>
         <div class="status" id="topStatus"></div>
         <div class="fine" style="margin-top:10px">Note: this page does not upload to a backend yet. We use login to add you to the waitlist.</div>
@@ -218,11 +218,7 @@
 
       <div class="card pad previewWrap">
         <div class="preview" id="heroPreview">
-          <!-- Optional: drop in a hero mp4 later -->
-          <div style="text-align:center; padding: 22px">
-            <div style="font-weight:850; font-size:18px">Hero preview</div>
-            <div class="fine" style="margin-top:8px">Replace with a 6–10s loop: <b>Original → Result</b> in first 2 seconds.</div>
-          </div>
+          <video id="heroVideo" playsinline autoplay muted loop preload="metadata" style="display:block; width:100%; height:100%; object-fit:cover"></video>
         </div>
         <div class="previewOverlay">
           <div class="tag">Photo + Reference → Motion</div>
@@ -267,19 +263,40 @@
     </section>
 
     <section id="waitlist" class="card pad" style="margin-top: 18px; display:none">
-      <h2>You’re on the waitlist</h2>
-      <p>We added you to the waitlist. We’ll email you when generation is enabled.</p>
+      <h2>Вы в вайтлисте</h2>
+      <p>Мы добавили вас в вайтлист. Пришлём письмо, когда генерация будет включена.</p>
       <div class="fine" id="waitlistEmail" style="margin-top:10px"></div>
     </section>
 
     <section id="refs" class="grid" style="margin-top: 26px">
-      <h2>References (for positioning + preview ideas)</h2>
-      <p class="fine">These are product references Boss shared. We can pull preview clips from them (or replace with our own before/after).</p>
+      <h2>Examples (from Monet reference)</h2>
+      <p class="fine">Video previews embedded from <a href="https://monet.vision/motion-transfer" target="_blank" rel="noreferrer" style="text-decoration:underline">monet.vision/motion-transfer</a>. If any link breaks, we’ll mirror files into our repo.</p>
+
       <div class="cols">
-        <a class="mini" href="https://monet.vision/motion-transfer" target="_blank" rel="noreferrer"><b>Monet — Motion Transfer</b><span class="fine">Positioning + layout reference.</span></a>
-        <a class="mini" href="https://aiconsistentcharacter.com/motion-control" target="_blank" rel="noreferrer"><b>AI Consistent Character — Motion Control</b><span class="fine">Examples + feature framing.</span></a>
-        <a class="mini" href="https://akool.com/apps/character/edit" target="_blank" rel="noreferrer"><b>Akool — Character Edit</b><span class="fine">UI patterns for upload + outputs.</span></a>
-        <a class="mini" href="https://openart.ai/video/action-sync-video" target="_blank" rel="noreferrer"><b>OpenArt — Action Sync</b><span class="fine">Preview video ideas.</span></a>
+        <div class="mini">
+          <b>Example 1</b>
+          <video playsinline muted loop autoplay preload="metadata" controls style="width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:#000">
+            <source src="https://files.monet.vision/1f3cbc1a-a2db-4e49-ac1c-0bbdcc3d66c7.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="mini">
+          <b>Example 2</b>
+          <video playsinline muted loop autoplay preload="metadata" controls style="width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:#000">
+            <source src="https://files.monet.vision/2461feae-e42a-4c83-9abd-d6f44bde6e55.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="mini">
+          <b>Example 3</b>
+          <video playsinline muted loop autoplay preload="metadata" controls style="width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:#000">
+            <source src="https://cdn.jsdelivr.net/gh/zengyue/cdn@v1.0.45/monet/pages/motion-transfer/2.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+
+      <div class="cols" style="margin-top:14px">
+        <a class="mini" href="https://aiconsistentcharacter.com/motion-control" target="_blank" rel="noreferrer"><b>Extra ref: AI Consistent Character</b><span class="fine">Feature framing.</span></a>
+        <a class="mini" href="https://akool.com/apps/character/edit" target="_blank" rel="noreferrer"><b>Extra ref: Akool</b><span class="fine">Upload UX patterns.</span></a>
+        <a class="mini" href="https://openart.ai/video/action-sync-video" target="_blank" rel="noreferrer"><b>Extra ref: OpenArt</b><span class="fine">Preview ideas.</span></a>
       </div>
     </section>
 
@@ -296,6 +313,12 @@
 
     // ---- CONFIG: set your Supabase project keys here ----
     // For GitHub Pages, these are public. Use RLS + limit auth providers in Supabase.
+    // TODO(Boss): paste Supabase URL + anon key here to enable Google login.
+    // Example:
+    // const SUPABASE_URL = 'https://xxxxx.supabase.co';
+    // const SUPABASE_ANON_KEY = 'eyJ...';
+    // NOTE: to enable real login, paste Supabase keys below.
+    // (Public keys are OK on GH Pages; enforce RLS on DB.)
     const SUPABASE_URL = window.__SUPABASE_URL__ || '';
     const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY__ || '';
 
@@ -322,7 +345,7 @@
     }
 
     function setSignedOutUI(){
-      authLabel.textContent = 'Not signed in';
+      authLabel.textContent = 'Не залогинены';
       loginBtn.style.display = '';
       logoutBtn.style.display = 'none';
       avatar.style.display = 'none';
@@ -345,9 +368,9 @@
         avatar.style.display = 'none';
       }
 
-      // Waitlist screen
+      // Waitlist screen (RU text per Boss)
       waitlist.style.display = '';
-      waitlistEmail.textContent = 'We will notify: ' + email;
+      waitlistEmail.textContent = 'Мы добавили вас в вайтлист. Напишем на: ' + email;
 
       // Scroll gently to waitlist so it’s obvious
       try{ waitlist.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
@@ -362,10 +385,10 @@
 
       // GitHub Pages origin example: https://<user>.github.io
       // IMPORTANT: Supabase Redirect URLs must include this exact value.
-      const redirectTo = window.location.origin + window.location.pathname;
+      const redirectTo = window.location.origin + window.location.pathname; // e.g. https://chikenjooe.github.io/motiontale-pro/
 
       loginBtn.addEventListener('click', async ()=>{
-        setStatus(topStatus, 'Opening Google sign-in…');
+        setStatus(topStatus, 'Открываю Google sign-in…');
         const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
         if(error) setStatus(topStatus, error.message, 'bad');
       });
@@ -373,7 +396,7 @@
       logoutBtn.addEventListener('click', async ()=>{
         await sb.auth.signOut();
         setSignedOutUI();
-        setStatus(topStatus, 'Signed out.', 'ok');
+        setStatus(topStatus, 'Вышли из аккаунта.', 'ok');
       });
 
       const { data: { session } } = await sb.auth.getSession();
@@ -383,7 +406,7 @@
       sb.auth.onAuthStateChange((_event, session)=>{
         if(session){
           setSignedInUI(session);
-          setStatus(topStatus, 'Signed in — added to waitlist.', 'ok');
+          setStatus(topStatus, 'Залогинены — мы добавили вас в вайтлист.', 'ok');
         } else {
           setSignedOutUI();
         }
@@ -393,14 +416,20 @@
       document.getElementById('generateBtn').addEventListener('click', async ()=>{
         const { data: { session } } = await sb.auth.getSession();
         if(!session){
-          setStatus(uploadStatus, 'Please login first to generate (waitlist flow).', 'bad');
+          setStatus(uploadStatus, 'Сначала залогинься, чтобы сгенерить (пока это waitlist-flow).', 'bad');
           loginBtn.click();
           return;
         }
-        setStatus(uploadStatus, 'You’re logged in. We added you to the waitlist — generation will unlock soon.', 'ok');
+        setStatus(uploadStatus, 'Ок. Вы залогинены — мы добавили вас в вайтлист. Генерация откроется скоро.', 'ok');
         waitlist.style.display = '';
-        waitlistEmail.textContent = 'We will notify: ' + (session.user.email || '');
+        waitlistEmail.textContent = 'Мы добавили вас в вайтлист. Напишем на: ' + (session.user.email || '');
       });
+    }
+
+    // Set hero demo video from Monet reference
+    const hero = document.getElementById('heroVideo');
+    if(hero){
+      hero.src = 'https://files.monet.vision/1f3cbc1a-a2db-4e49-ac1c-0bbdcc3d66c7.mp4';
     }
 
     initAuth();
