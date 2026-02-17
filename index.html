@@ -361,15 +361,23 @@
     const burger = document.getElementById('burger');
     const nav = document.getElementById('nav');
     if(burger && nav){
+      const closeMenu = ()=>{
+        nav.classList.remove('open');
+        burger.setAttribute('aria-expanded','false');
+      };
+
       burger.addEventListener('click', ()=>{
         const isOpen = nav.classList.toggle('open');
         burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
+
       // Close menu when clicking a link
-      nav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
-        nav.classList.remove('open');
-        burger.setAttribute('aria-expanded','false');
-      }));
+      nav.querySelectorAll('a').forEach(a=>a.addEventListener('click', closeMenu));
+
+      // If user rotates / resizes to desktop width, ensure menu isn't stuck open
+      window.addEventListener('resize', ()=>{
+        if(window.innerWidth > 720) closeMenu();
+      });
     }
 
     const topStatus = document.getElementById('topStatus');
